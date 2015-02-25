@@ -278,10 +278,26 @@ mrb_scinterm_get_line(mrb_state *mrb, mrb_value self)
   mrb_int line, len;
 
   mrb_get_args(mrb, "i", &line);
-  len = scintilla_send_message(sci, SCI_LINELENGTH, (uptr_t)line, 0);
+  len = scintilla_send_message(sci, SCI_LINELENGTH, (uptr_t)line, (sptr_t)0);
   text = (char *)mrb_malloc(mrb, sizeof(char)*len);
   scintilla_send_message(sci, SCI_GETLINE, (uptr_t)line, (sptr_t)text);
   return mrb_str_new(mrb, text, len);
+}
+
+static mrb_value
+mrb_scinterm_get_curline(mrb_state *mrb, mrb_value self)
+{
+  Scintilla *sci = DATA_PTR(self);
+  char *text = NULL;
+  mrb_int len, pos;
+  mrb_value ret_a = mrb_ary_new(mrb);
+
+  len = scintilla_send_message(sci, SCI_GETCURLINE, (uptr_t)0, (sptr_t)0) + 1;
+  text = (char *)mrb_malloc(mrb, sizeof(char)*len);
+  pos = scintilla_send_message(sci, SCI_GETCURLINE, (uptr_t)len, (sptr_t)text);
+  mrb_ary_push(mrb, ret_a, mrb_str_new_cstr(mrb, text));
+  mrb_ary_push(mrb, ret_a, mrb_fixnum_value(pos));
+  return ret_a;
 }
 
 static mrb_value
@@ -414,6 +430,7 @@ mrb_mruby_scinterm_gem_init(mrb_state* mrb)
   mrb_define_method(mrb, sci, "get_property", mrb_scinterm_get_property, MRB_ARGS_REQ(1));
   mrb_define_method(mrb, sci, "get_text", mrb_scinterm_get_text, MRB_ARGS_REQ(1));
   mrb_define_method(mrb, sci, "get_line", mrb_scinterm_get_line, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, sci, "get_curline", mrb_scinterm_get_curline, MRB_ARGS_NONE());
 
   mrb_define_method(mrb, sci, "set_lexer_language", mrb_scinterm_set_lexer_language, MRB_ARGS_REQ(1));
 
@@ -425,7 +442,7 @@ mrb_mruby_scinterm_gem_init(mrb_state* mrb)
   mrb_define_method(mrb, sci, "create_document", mrb_scinterm_create_document, MRB_ARGS_NONE());
   mrb_define_method(mrb, sci, "add_refdocument", mrb_scinterm_add_refdocument, MRB_ARGS_REQ(1));
   mrb_define_method(mrb, sci, "release_document", mrb_scinterm_release_document, MRB_ARGS_REQ(1));
-  
+
   mrb_define_const(mrb, scim, "COLOR_BLACK", mrb_fixnum_value(0x000000));
   mrb_define_const(mrb, scim, "COLOR_RED",  mrb_fixnum_value(0x000080));
   mrb_define_const(mrb, scim, "COLOR_GREEN", mrb_fixnum_value(0x008000));
