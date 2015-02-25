@@ -426,6 +426,22 @@ mrb_mruby_scinterm_gem_init(mrb_state* mrb)
   mrb_define_method(mrb, sci, "add_refdocument", mrb_scinterm_add_refdocument, MRB_ARGS_REQ(1));
   mrb_define_method(mrb, sci, "release_document", mrb_scinterm_release_document, MRB_ARGS_REQ(1));
   
+  mrb_define_const(mrb, scim, "COLOR_BLACK", mrb_fixnum_value(0x000000));
+  mrb_define_const(mrb, scim, "COLOR_RED",  mrb_fixnum_value(0x000080));
+  mrb_define_const(mrb, scim, "COLOR_GREEN", mrb_fixnum_value(0x008000));
+  mrb_define_const(mrb, scim, "COLOR_YELLOW",  mrb_fixnum_value(0x008080));
+  mrb_define_const(mrb, scim, "COLOR_BLUE", mrb_fixnum_value(0x800000));
+  mrb_define_const(mrb, scim, "COLOR_MAGENTA", mrb_fixnum_value(0x800080));
+  mrb_define_const(mrb, scim, "COLOR_CYAN", mrb_fixnum_value(0x808000));
+  mrb_define_const(mrb, scim, "COLOR_WHITE", mrb_fixnum_value(0xC0C0C0));
+  mrb_define_const(mrb, scim, "COLOR_LIGHTBLACK", mrb_fixnum_value(0x404040));
+  mrb_define_const(mrb, scim, "COLOR_LIGHTRED", mrb_fixnum_value(0x0000FF));
+  mrb_define_const(mrb, scim, "COLOR_LIGHTGREEN", mrb_fixnum_value(0x00FF00));
+  mrb_define_const(mrb, scim, "COLOR_LIGHTYELLOW", mrb_fixnum_value(0x00FFFF));
+  mrb_define_const(mrb, scim, "COLOR_LIGHTBLUE", mrb_fixnum_value(0xFF0000));
+  mrb_define_const(mrb, scim, "COLOR_LIGHTMAGENTA", mrb_fixnum_value(0xFF00FF));
+  mrb_define_const(mrb, scim, "COLOR_LIGHTCYAN", mrb_fixnum_value(0xFFFF00));
+  mrb_define_const(mrb, scim, "COLOR_LIGHTWHITE", mrb_fixnum_value(0xFFFFFF));
 
   scmrb = mrb;
 
