@@ -405,6 +405,15 @@ mrb_scinterm_release_document(mrb_state *mrb, mrb_value self)
   return mrb_nil_value();
 }
 
+static mrb_value
+mrb_scinterm_color_pair(mrb_state *mrb, mrb_value self)
+{
+  mrb_int f, b;
+  
+  mrb_get_args(mrb, "ii", &f, &b);
+  return mrb_fixnum_value(SCI_COLOR_PAIR(f, b));
+}
+
 void
 mrb_mruby_scinterm_gem_init(mrb_state* mrb)
 {
@@ -443,6 +452,8 @@ mrb_mruby_scinterm_gem_init(mrb_state* mrb)
   mrb_define_method(mrb, sci, "add_refdocument", mrb_scinterm_add_refdocument, MRB_ARGS_REQ(1));
   mrb_define_method(mrb, sci, "release_document", mrb_scinterm_release_document, MRB_ARGS_REQ(1));
 
+  mrb_define_class_method(mrb, sci, "color_pair", mrb_scinterm_color_pair, MRB_ARGS_REQ(2));
+  
   mrb_define_const(mrb, scim, "COLOR_BLACK", mrb_fixnum_value(0x000000));
   mrb_define_const(mrb, scim, "COLOR_RED",  mrb_fixnum_value(0x000080));
   mrb_define_const(mrb, scim, "COLOR_GREEN", mrb_fixnum_value(0x008000));
