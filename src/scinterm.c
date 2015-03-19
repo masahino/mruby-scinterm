@@ -406,6 +406,22 @@ mrb_scinterm_release_document(mrb_state *mrb, mrb_value self)
 }
 
 static mrb_value
+mrb_scinterm_autoc_get_current_text(mrb_state *mrb, mrb_value self)
+{
+  Scintilla *sci = DATA_PTR(self);
+  char *text = NULL;
+  mrb_int len;
+
+  len = scintilla_send_message(sci, SCI_AUTOCGETCURRENTTEXT, (uptr_t)0, (sptr_t)0) + 1;
+  if (len == 1) {
+    return mrb_nil_value();
+  }
+  text = (char *)mrb_malloc(mrb, sizeof(char)*len);
+  len = scintilla_send_message(sci, SCI_AUTOCGETCURRENTTEXT, (uptr_t)len, (sptr_t)text);
+  return mrb_str_new_cstr(mrb, text);
+}
+
+static mrb_value
 mrb_scinterm_color_pair(mrb_state *mrb, mrb_value self)
 {
   mrb_int f, b;
@@ -451,6 +467,8 @@ mrb_mruby_scinterm_gem_init(mrb_state* mrb)
   mrb_define_method(mrb, sci, "create_document", mrb_scinterm_create_document, MRB_ARGS_NONE());
   mrb_define_method(mrb, sci, "add_refdocument", mrb_scinterm_add_refdocument, MRB_ARGS_REQ(1));
   mrb_define_method(mrb, sci, "release_document", mrb_scinterm_release_document, MRB_ARGS_REQ(1));
+  
+  mrb_define_method(mrb, sci, "autoc_get_current_text", mrb_scinterm_autoc_get_current_text, MRB_ARGS_NONE());
 
   mrb_define_class_method(mrb, sci, "color_pair", mrb_scinterm_color_pair, MRB_ARGS_REQ(2));
   
