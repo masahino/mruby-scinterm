@@ -23,7 +23,7 @@ struct mrb_scintilla_data {
 };
 
 struct mrb_scintilla_doc_data {
-  void *pdoc;
+  sptr_t pdoc;
 };
 
 static struct mrb_scintilla_data *scintilla_list = NULL;
@@ -340,11 +340,11 @@ static mrb_value
 mrb_scinterm_get_docpointer(mrb_state *mrb, mrb_value self)
 {
   Scintilla *sci = DATA_PTR(self);
-  void *pdoc;
+  sptr_t pdoc;
   struct mrb_scintilla_doc_data *doc = mrb_malloc(mrb, sizeof(struct mrb_scintilla_doc_data));
   mrb_value doc_obj;
 
-  pdoc = (void *)scintilla_send_message(sci, SCI_GETDOCPOINTER, 0, 0);
+  pdoc = scintilla_send_message(sci, SCI_GETDOCPOINTER, 0, 0);
   doc->pdoc = pdoc;
   return mrb_obj_value(mrb_data_object_alloc(mrb, mrb_class_get_under(mrb, mrb_module_get(mrb, "Scintilla"), "Document"), doc, &mrb_document_type));
 }
@@ -361,7 +361,7 @@ mrb_scinterm_set_docpointer(mrb_state *mrb, mrb_value self)
     scintilla_send_message(sci, SCI_SETDOCPOINTER, 0, (sptr_t)0);
   } else {
     doc = DATA_PTR(doc_obj);
-    scintilla_send_message(sci, SCI_SETDOCPOINTER, 0, (sptr_t)doc->pdoc);
+    scintilla_send_message(sci, SCI_SETDOCPOINTER, 0, doc->pdoc);
   }
   return mrb_nil_value();
 }
@@ -370,13 +370,13 @@ static mrb_value
 mrb_scinterm_create_document(mrb_state *mrb, mrb_value self)
 {
   Scintilla *sci = DATA_PTR(self);
-  sptr_t *pdoc = NULL;
+  sptr_t pdoc;
   struct mrb_scintilla_doc_data *doc = mrb_malloc(mrb, sizeof(struct mrb_scintilla_doc_data));
-  mrb_value doc_obj;
 
-  pdoc = (sptr_t *)scintilla_send_message(sci, SCI_CREATEDOCUMENT, 0, 0);
+  pdoc = scintilla_send_message(sci, SCI_CREATEDOCUMENT, 0, 0);
   doc->pdoc = pdoc;
   return mrb_obj_value(mrb_data_object_alloc(mrb, mrb_class_get_under(mrb, mrb_module_get(mrb, "Scintilla"), "Document"), doc, &mrb_document_type));
+
 }
 
 static mrb_value
@@ -388,7 +388,7 @@ mrb_scinterm_add_refdocument(mrb_state *mrb, mrb_value self)
 
   mrb_get_args(mrb, "o", &doc_obj);
   doc = DATA_PTR(doc_obj);
-  scintilla_send_message(sci, SCI_ADDREFDOCUMENT, 0, (sptr_t)doc->pdoc);
+  scintilla_send_message(sci, SCI_ADDREFDOCUMENT, 0, doc->pdoc);
   return mrb_nil_value();
 }
 
@@ -401,7 +401,7 @@ mrb_scinterm_release_document(mrb_state *mrb, mrb_value self)
 
   mrb_get_args(mrb, "o", &doc_obj);
   doc = DATA_PTR(doc_obj);
-  scintilla_send_message(sci, SCI_RELEASEDOCUMENT, 0, (sptr_t)doc->pdoc);
+  scintilla_send_message(sci, SCI_RELEASEDOCUMENT, 0, doc->pdoc);
   return mrb_nil_value();
 }
 
