@@ -51,3 +51,14 @@ assert('get property') do
 end
 
 
+assert('SCI_COLOR_PAIR') do
+  Curses::initscr
+  sci = Scintilla::ScinTerm.new
+  assert_equal(1, sci.color_pair(0, 0))
+  assert_equal(0xc0c0c1, sci.color_pair(Scintilla::COLOR_WHITE, 0))
+  assert_equal(0xc0c0c0*16+1, sci.color_pair(Scintilla::COLOR_BLACK, Scintilla::COLOR_WHITE))
+end
+
+assert('Platform') do
+  assert_equal(:CURSES, Scintilla::PLATFORM)
+end
