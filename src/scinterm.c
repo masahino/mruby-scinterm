@@ -311,6 +311,20 @@ mrb_scinterm_set_lexer_language(mrb_state *mrb, mrb_value self)
 }
 
 static mrb_value
+mrb_scinterm_get_lexer_language(mrb_state *mrb, mrb_value self)
+{
+  Scintilla *sci = DATA_PTR(self);
+  mrb_int len;
+  char *text = NULL;
+
+  len = scintilla_send_message(sci, SCI_GETLEXERLANGUAGE, (uptr_t)0, (sptr_t)0) + 1;
+  text = (char *)mrb_malloc(mrb, sizeof(char)*len);
+  scintilla_send_message(sci, SCI_GETLEXERLANGUAGE, (uptr_t)len, (sptr_t)text);
+  return mrb_str_new_cstr(mrb, text);
+}
+
+
+static mrb_value
 mrb_scinterm_resize_window(mrb_state *mrb, mrb_value self)
 {
   Scintilla *sci = DATA_PTR(self);
@@ -436,6 +450,9 @@ mrb_mruby_scinterm_gem_init(mrb_state* mrb)
   struct RClass *sci, *scim, *doc;
 
   scim = mrb_module_get(mrb, "Scintilla");
+
+  mrb_define_const(mrb, scim, "PLATFORM", mrb_symbol_value(mrb_intern_cstr(mrb, "CURSES")));
+
   sci = mrb_define_class_under(mrb, scim, "ScinTerm", mrb_class_get_under(mrb, scim, "ScintillaBase"));
   MRB_SET_INSTANCE_TT(sci, MRB_TT_DATA);
 
@@ -452,23 +469,24 @@ mrb_mruby_scinterm_gem_init(mrb_state* mrb)
 
   mrb_define_method(mrb, sci, "send_mouse", mrb_scinterm_send_mouse, MRB_ARGS_REQ(8));
 
-  mrb_define_method(mrb, sci, "get_property", mrb_scinterm_get_property, MRB_ARGS_REQ(1));
-  mrb_define_method(mrb, sci, "get_text", mrb_scinterm_get_text, MRB_ARGS_REQ(1));
-  mrb_define_method(mrb, sci, "get_line", mrb_scinterm_get_line, MRB_ARGS_REQ(1));
-  mrb_define_method(mrb, sci, "get_curline", mrb_scinterm_get_curline, MRB_ARGS_NONE());
+  mrb_define_method(mrb, sci, "sci_get_property", mrb_scinterm_get_property, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, sci, "sci_get_text", mrb_scinterm_get_text, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, sci, "sci_get_line", mrb_scinterm_get_line, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, sci, "sci_get_curline", mrb_scinterm_get_curline, MRB_ARGS_NONE());
 
-  mrb_define_method(mrb, sci, "set_lexer_language", mrb_scinterm_set_lexer_language, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, sci, "sci_set_lexer_language", mrb_scinterm_set_lexer_language, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, sci, "sci_get_lexer_language", mrb_scinterm_get_lexer_language, MRB_ARGS_NONE());
 
   mrb_define_method(mrb, sci, "resize_window", mrb_scinterm_resize_window, MRB_ARGS_REQ(2));
   mrb_define_method(mrb, sci, "move_window", mrb_scinterm_move_window, MRB_ARGS_REQ(2));
 
-  mrb_define_method(mrb, sci, "get_docpointer", mrb_scinterm_get_docpointer, MRB_ARGS_NONE());
-  mrb_define_method(mrb, sci, "set_docpointer", mrb_scinterm_set_docpointer, MRB_ARGS_REQ(1));
-  mrb_define_method(mrb, sci, "create_document", mrb_scinterm_create_document, MRB_ARGS_NONE());
-  mrb_define_method(mrb, sci, "add_refdocument", mrb_scinterm_add_refdocument, MRB_ARGS_REQ(1));
-  mrb_define_method(mrb, sci, "release_document", mrb_scinterm_release_document, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, sci, "sci_get_docpointer", mrb_scinterm_get_docpointer, MRB_ARGS_NONE());
+  mrb_define_method(mrb, sci, "sci_set_docpointer", mrb_scinterm_set_docpointer, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, sci, "sci_create_document", mrb_scinterm_create_document, MRB_ARGS_NONE());
+  mrb_define_method(mrb, sci, "sci_add_refdocument", mrb_scinterm_add_refdocument, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, sci, "sci_release_document", mrb_scinterm_release_document, MRB_ARGS_REQ(1));
   
-  mrb_define_method(mrb, sci, "autoc_get_current_text", mrb_scinterm_autoc_get_current_text, MRB_ARGS_NONE());
+  mrb_define_method(mrb, sci, "sci_autoc_get_current_text", mrb_scinterm_autoc_get_current_text, MRB_ARGS_NONE());
 
   mrb_define_class_method(mrb, sci, "color_pair", mrb_scinterm_color_pair, MRB_ARGS_REQ(2));
   
