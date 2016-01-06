@@ -5,6 +5,13 @@ assert('Scintilla::ScinTerm.new') do
   Curses::endwin
 end
 
+assert('Scintilla::ScinTerm.delete') do
+  Curses::initscr
+  sci = Scintilla::ScinTerm.new
+  sci.delete
+  Curses::endwin
+end
+
 assert('ScinTerm.refresh') do
   Curses::initscr
   sci = Scintilla::ScinTerm.new
@@ -47,16 +54,19 @@ assert('get property') do
   Curses::initscr
   sci = Scintilla::ScinTerm.new
   sci.send_message(Scintilla::SCI_SETPROPERTY, "hogehoge", "huga")
-  assert_equal("huga",   sci.get_property("hogehoge"))
+  assert_equal("huga",   sci.sci_get_property("hogehoge"))
 end
 
 
 assert('SCI_COLOR_PAIR') do
   Curses::initscr
   sci = Scintilla::ScinTerm.new
-  assert_equal(1, sci.color_pair(0, 0))
-  assert_equal(0xc0c0c1, sci.color_pair(Scintilla::COLOR_WHITE, 0))
-  assert_equal(0xc0c0c0*16+1, sci.color_pair(Scintilla::COLOR_BLACK, Scintilla::COLOR_WHITE))
+  assert_equal(1, Scintilla::ScinTerm::color_pair(0, 0))
+  assert_equal(0xc0c0c1,
+               Scintilla::ScinTerm::color_pair(Scintilla::COLOR_WHITE, 0))
+  assert_equal(0xc0c0c0*16+1,
+               Scintilla::ScinTerm::color_pair(Scintilla::COLOR_BLACK,
+                                               Scintilla::COLOR_WHITE))
 end
 
 assert('Platform') do

@@ -99,6 +99,17 @@ mrb_scinterm_initialize(mrb_state *mrb, mrb_value self)
   return self;
 }
 
+/* scintilla_delete (sci) */
+static mrb_value
+mrb_scinterm_delete(mrb_state *mrb, mrb_value self)
+{
+  Scintilla *sci;
+  sci = DATA_PTR(self);
+  scintilla_delete(sci);
+  DATA_PTR(self) = NULL;
+  return mrb_nil_value();
+}
+
 /* scintilla_get_clipboard (sci, buffer) */
 static mrb_value
 mrb_scinterm_get_clipboard(mrb_state *mrb, mrb_value self)
@@ -460,6 +471,7 @@ mrb_mruby_scinterm_gem_init(mrb_state* mrb)
   MRB_SET_INSTANCE_TT(doc, MRB_TT_DATA);
 
   mrb_define_method(mrb, sci, "initialize", mrb_scinterm_initialize, MRB_ARGS_OPT(1));
+  mrb_define_method(mrb, sci, "delete", mrb_scinterm_delete, MRB_ARGS_NONE());
   mrb_define_method(mrb, sci, "get_clipboard", mrb_scinterm_get_clipboard, MRB_ARGS_REQ(1));
   //  mrb_define_method(mrb, sci, "get_window", mrb_scinterm_get_window, MRB_ARGS_NONE());
   mrb_define_method(mrb, sci, "refresh", mrb_scinterm_refresh, MRB_ARGS_NONE());
