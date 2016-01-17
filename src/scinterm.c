@@ -362,6 +362,19 @@ mrb_scinterm_move_window(mrb_state *mrb, mrb_value self)
 }
 
 static mrb_value
+mrb_scinterm_setpos(mrb_state *mrb, mrb_value self)
+{
+  Scintilla *sci = DATA_PTR(self);
+  mrb_int x, y;
+
+  mrb_get_args(mrb, "ii", &y, &x);
+  wmove(scintilla_get_window(sci), y, x);
+  wrefresh(scintilla_get_window(sci));
+
+  return mrb_nil_value();
+}
+
+static mrb_value
 mrb_scinterm_get_docpointer(mrb_state *mrb, mrb_value self)
 {
   Scintilla *sci = DATA_PTR(self);
@@ -491,6 +504,7 @@ mrb_mruby_scinterm_gem_init(mrb_state* mrb)
 
   mrb_define_method(mrb, sci, "resize_window", mrb_scinterm_resize_window, MRB_ARGS_REQ(2));
   mrb_define_method(mrb, sci, "move_window", mrb_scinterm_move_window, MRB_ARGS_REQ(2));
+  mrb_define_method(mrb, sci, "setpos", mrb_scinterm_setpos, MRB_ARGS_REQ(2));
 
   mrb_define_method(mrb, sci, "sci_get_docpointer", mrb_scinterm_get_docpointer, MRB_ARGS_NONE());
   mrb_define_method(mrb, sci, "sci_set_docpointer", mrb_scinterm_set_docpointer, MRB_ARGS_REQ(1));
