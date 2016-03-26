@@ -380,7 +380,6 @@ mrb_scinterm_get_docpointer(mrb_state *mrb, mrb_value self)
   Scintilla *sci = DATA_PTR(self);
   sptr_t pdoc;
   struct mrb_scintilla_doc_data *doc = mrb_malloc(mrb, sizeof(struct mrb_scintilla_doc_data));
-  mrb_value doc_obj;
 
   pdoc = scintilla_send_message(sci, SCI_GETDOCPOINTER, 0, 0);
   doc->pdoc = pdoc;
