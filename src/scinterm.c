@@ -54,9 +54,9 @@ void scnotification(Scintilla *view, int msg, void *lParam, void *wParam) {
 }
 
 static void scinterm_free(mrb_state *mrb, void *ptr) {
-  fprintf(stderr, "scinterm_free %p\n", ptr);
+/* fprintf(stderr, "scinterm_free %p\n", ptr); */
   if (ptr != NULL) {
-    //	  scintilla_delete(ptr);
+    scintilla_delete(ptr);
   }
 }
 
