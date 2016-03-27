@@ -1,0 +1,38 @@
+diff -upr scinterm_1.7-org/Makefile scinterm_1.7/Makefile
+--- scinterm_1.7-org/Makefile	2016-02-03 23:13:29.000000000 +0900
++++ scinterm_1.7/Makefile	2016-03-27 09:29:06.000000000 +0900
+@@ -5,7 +5,7 @@
+ AR = ar
+ CXX = g++
+ INCLUDEDIRS = -I ../include -I ../src -I ../lexlib
+-CXXFLAGS = -Wall -pedantic -DCURSES -DSCI_LEXER $(INCLUDEDIRS)
++CXXFLAGS = -Wall -pedantic -DCURSES -DSCI_LEXER $(INCLUDEDIRS) -D_XOPEN_SOURCE_EXTENDED
+ ifdef DEBUG
+   CXXFLAGS += -DDEBUG -g
+ else
+diff -upr scinterm_1.7-org/ScintillaTerm.cxx scinterm_1.7/ScintillaTerm.cxx
+--- scinterm_1.7-org/ScintillaTerm.cxx	2016-02-03 23:13:29.000000000 +0900
++++ scinterm_1.7/ScintillaTerm.cxx	2016-03-27 09:34:29.000000000 +0900
+@@ -6,6 +6,7 @@
+ // order to display UTF-8 characters properly in ncursesw.
+ 
+ #include <math.h>
++#include <stdlib.h>
+ #include <stdint.h>
+ #include <string.h>
+ 
+@@ -418,7 +419,13 @@ public:
+   void MeasureWidths(Font &font_, const char *s, int len,
+                      XYPOSITION *positions) {
+     for (int i = 0, j = 0; i < len; i++) {
+-      if (!UTF8IsTrailByte((unsigned char)s[i])) j++;
++      if (!UTF8IsTrailByte((unsigned char)s[i])) {
++	if (UTF8IsAscii((unsigned char)s[i])) {
++          j++;
++        } else {
++          j += 2;
++        }
++      }
+       positions[i] = j;
+     }
+   }
