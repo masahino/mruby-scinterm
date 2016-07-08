@@ -16,7 +16,7 @@ MRuby::Gem::Specification.new('mruby-scinterm') do |spec|
     scinterm_dir = "#{scintilla_dir}/scintilla/scinterm_#{scinterm_ver}"
 
     unless File.exists?(scintilla_a)
-      open(scintilla_url, "r") do |http|
+      open(scintilla_url, 'Accept-Encoding' => '') do |http|
         scintilla_tar = http.read
         FileUtils.mkdir_p scintilla_dir
         IO.popen("tar xfz - -C #{filename scintilla_dir}", "w") do |f|
@@ -29,7 +29,7 @@ MRuby::Gem::Specification.new('mruby-scinterm') do |spec|
         end
       end
       sh %Q{(cd #{scintilla_dir}/scintilla && unzip -o #{filename scinterm_file})}
-      sh %Q{(cd #{scinterm_dir} && make CXX=#{build.cxx.command} AR=#{build.archiver.command} CURSES_FLAGS=-DNO_CXX_REGEX)}
+      sh %Q{(cd #{scinterm_dir} && make CXX=#{build.cxx.command} AR=#{build.archiver.command} CURSES_FLAGS=-DNO_CXX11_REGEX)}
     end
 
     self.linker.flags_before_libraries << scintilla_a
