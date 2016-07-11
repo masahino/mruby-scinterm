@@ -29,7 +29,11 @@ MRuby::Gem::Specification.new('mruby-scinterm') do |spec|
         end
       end
       sh %Q{(cd #{scintilla_dir}/scintilla && unzip -o #{filename scinterm_file})}
-      sh %Q{(cd #{scinterm_dir} && make CXX=#{build.cxx.command} AR=#{build.archiver.command} CURSES_FLAGS=-DNO_CXX11_REGEX)}
+      curses_flag = "-DNO_CXX11_REGEX"
+      if build.kind_of?(MRuby::CrossBuild) && %w(x86_64-w64-mingw32 i686-w64-mingw32).include?(build.host_target)
+        curses_flag += " -I/usr/#{build.host_target}/include/ncurses"
+      end
+      sh %Q{(cd #{scinterm_dir} && make CXX=#{build.cxx.command} AR=#{build.archiver.command} CURSES_FLAGS="#{curses_flag}")}
     end
 
     self.linker.flags_before_libraries << scintilla_a
