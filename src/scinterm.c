@@ -127,6 +127,15 @@ mrb_scinterm_get_clipboard(mrb_state *mrb, mrb_value self)
   return ret_ary;
 }
 
+static mrb_value
+mrb_scinterm_get_window(mrb_state *mrb, mrb_value self)
+{
+  Scintilla *sci;
+  WINDOW *win;
+  sci = DATA_PTR(self);
+  win = scintilla_get_window(sci);
+  return mrb_fixnum_value(win);
+}
 /*
   static mrb_value
   mrb_scinterm_get_window(mrb_state *mrb, mrb_value self)
@@ -483,7 +492,11 @@ mrb_mruby_scinterm_gem_init(mrb_state* mrb)
 
   scim = mrb_module_get(mrb, "Scintilla");
 
+#if !_WIN32
   mrb_define_const(mrb, scim, "PLATFORM", mrb_symbol_value(mrb_intern_cstr(mrb, "CURSES")));
+#else
+  mrb_define_const(mrb, scim, "PLATFORM", mrb_symbol_value(mrb_intern_cstr(mrb, "CURSES_WIN32")));
+#endif
 
   sci = mrb_define_class_under(mrb, scim, "ScinTerm", mrb_class_get_under(mrb, scim, "ScintillaBase"));
   MRB_SET_INSTANCE_TT(sci, MRB_TT_DATA);
@@ -494,7 +507,7 @@ mrb_mruby_scinterm_gem_init(mrb_state* mrb)
   mrb_define_method(mrb, sci, "initialize", mrb_scinterm_initialize, MRB_ARGS_OPT(1));
   mrb_define_method(mrb, sci, "delete", mrb_scinterm_delete, MRB_ARGS_NONE());
   mrb_define_method(mrb, sci, "get_clipboard", mrb_scinterm_get_clipboard, MRB_ARGS_REQ(1));
-  //  mrb_define_method(mrb, sci, "get_window", mrb_scinterm_get_window, MRB_ARGS_NONE());
+  mrb_define_method(mrb, sci, "get_window", mrb_scinterm_get_window, MRB_ARGS_NONE());
   mrb_define_method(mrb, sci, "noutrefresh", mrb_scinterm_noutrefresh, MRB_ARGS_NONE());
   mrb_define_method(mrb, sci, "refresh", mrb_scinterm_refresh, MRB_ARGS_NONE());
   mrb_define_method(mrb, sci, "send_key", mrb_scinterm_send_key, MRB_ARGS_REQ(5));
