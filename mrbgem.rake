@@ -33,6 +33,9 @@ MRuby::Gem::Specification.new('mruby-scinterm') do |spec|
       if build.kind_of?(MRuby::CrossBuild) && %w(x86_64-w64-mingw32 i686-w64-mingw32).include?(build.host_target)
         curses_flag += " -I/usr/#{build.host_target}/include/ncurses"
       end
+      if build.kind_of?(MRuby::CrossBuild)
+        curses_flag += " #{build.cc.all_flags.gsub('\\','\\\\').gsub('"', '\\"')}"
+      end
       sh %Q{(cd #{scinterm_dir} && make CXX=#{build.cxx.command} AR=#{build.archiver.command} CURSES_FLAGS="#{curses_flag}")}
     end
 
