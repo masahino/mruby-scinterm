@@ -11,7 +11,7 @@ MRuby::Gem::Specification.new('mruby-scinterm') do |spec|
     scintilla_url = "http://www.scintilla.org/scintilla#{scintilla_ver}.tgz"
     scintilla_dir = "#{build_dir}/scintilla"
     scintilla_a = "#{scintilla_dir}/scintilla/bin/scintilla.a"
-    scinterm_url = "http://foicica.com/scinterm/download/scinterm_#{scinterm_ver}.zip"
+    scinterm_url = "https://foicica.com/scinterm/download/scinterm_#{scinterm_ver}.zip"
     scinterm_file = "#{scintilla_dir}/scintilla/scinterm_#{scinterm_ver}.zip"
     scinterm_dir = "#{scintilla_dir}/scintilla/scinterm_#{scinterm_ver}"
 
