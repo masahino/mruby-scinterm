@@ -477,6 +477,20 @@ mrb_scinterm_autoc_get_current_text(mrb_state *mrb, mrb_value self)
 }
 
 static mrb_value
+mrb_scinterm_margin_get_text(mrb_state *mrb, mrb_value self)
+{
+  Scintilla *sci = DATA_PTR(self);
+  char *text = NULL;
+  mrb_int line, len;
+
+  mrb_get_args(mrb, "i", &line);
+  len = scintilla_send_message(sci, SCI_MARGINGETTEXT, (uptr_t)line, (sptr_t)0) + 1;
+  text = (char *)mrb_malloc(mrb, sizeof(char)*len);
+  len = scintilla_send_message(sci, SCI_MARGINGETTEXT, (uptr_t)line, (sptr_t)text);
+  return mrb_str_new_cstr(mrb, text);
+}
+
+static mrb_value
 mrb_scinterm_color_pair(mrb_state *mrb, mrb_value self)
 {
   mrb_int f, b;
@@ -535,6 +549,8 @@ mrb_mruby_scinterm_gem_init(mrb_state* mrb)
   mrb_define_method(mrb, sci, "sci_release_document", mrb_scinterm_release_document, MRB_ARGS_REQ(1));
   
   mrb_define_method(mrb, sci, "sci_autoc_get_current_text", mrb_scinterm_autoc_get_current_text, MRB_ARGS_NONE());
+
+  mrb_define_method(mrb, sci, "sci_margin_get_text", mrb_scinterm_margin_get_text, MRB_ARGS_REQ(1));
 
   mrb_define_class_method(mrb, sci, "color_pair", mrb_scinterm_color_pair, MRB_ARGS_REQ(2));
   
