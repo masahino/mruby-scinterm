@@ -262,11 +262,12 @@ static mrb_value
 mrb_scinterm_send_mouse(mrb_state *mrb, mrb_value self)
 {
   Scintilla *sci = DATA_PTR(self);
-  mrb_int event, time, button, y, x;
+  mrb_int event, button, y, x;
+  mrb_float time;
   mrb_bool shift, ctrl, alt, ret;
 
-  mrb_get_args(mrb, "iiiiibbb", &event, &time, &button, &y, &x, &shift, &ctrl, &alt);
-  ret = scintilla_send_mouse(sci, event, time, button, y, x, shift, ctrl, alt);
+  mrb_get_args(mrb, "ifiiibbb", &event, &time, &button, &y, &x, &shift, &ctrl, &alt);
+  ret = scintilla_send_mouse(sci, event, (unsigned int)time, button, y, x, shift, ctrl, alt);
 
   return (ret == TRUE)? mrb_true_value() : mrb_false_value();
 
