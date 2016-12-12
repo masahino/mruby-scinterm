@@ -56,7 +56,7 @@ void scnotification(Scintilla *view, int msg, void *lParam, void *wParam) {
 static void scinterm_free(mrb_state *mrb, void *ptr) {
 /* fprintf(stderr, "scinterm_free %p\n", ptr); */
   if (ptr != NULL) {
-    scintilla_delete(ptr);
+    scintilla_delete((Scintilla *)ptr);
   }
 }
 
@@ -70,7 +70,7 @@ mrb_scinterm_initialize(mrb_state *mrb, mrb_value self)
   Scintilla *sci = scintilla_new(scnotification);
   mrb_value callback;
   //     struct mrb_scintilla_data *scdata = mrb_malloc(mrb, sizeof(struct mrb_scintilla_data));
-  struct mrb_scintilla_data *scdata = malloc(sizeof(struct mrb_scintilla_data));
+  struct mrb_scintilla_data *scdata = (struct mrb_scintilla_data *)malloc(sizeof(struct mrb_scintilla_data));
   struct mrb_scintilla_data *tmp;
   mrb_int argc;
 
@@ -104,7 +104,7 @@ static mrb_value
 mrb_scinterm_delete(mrb_state *mrb, mrb_value self)
 {
   Scintilla *sci;
-  sci = DATA_PTR(self);
+  sci = (Scintilla *)DATA_PTR(self);
   scintilla_delete(sci);
   DATA_PTR(self) = NULL;
   return mrb_nil_value();
@@ -119,7 +119,7 @@ mrb_scinterm_get_clipboard(mrb_state *mrb, mrb_value self)
   mrb_int size;
   mrb_value ret_ary = mrb_ary_new(mrb);
 
-  sci = DATA_PTR(self);
+  sci = (Scintilla *)DATA_PTR(self);
   size = scintilla_get_clipboard(sci, buffer);
   mrb_ary_push(mrb, ret_ary, mrb_fixnum_value(size));
   mrb_ary_push(mrb, ret_ary, mrb_str_new_cstr(mrb, buffer));
@@ -132,9 +132,9 @@ mrb_scinterm_get_window(mrb_state *mrb, mrb_value self)
 {
   Scintilla *sci;
   WINDOW *win;
-  sci = DATA_PTR(self);
+  sci = (Scintilla *)DATA_PTR(self);
   win = scintilla_get_window(sci);
-  return mrb_fixnum_value(win);
+  return mrb_cptr_value(mrb, win);
 }
 /*
   static mrb_value
@@ -161,7 +161,7 @@ mrb_scinterm_get_window(mrb_state *mrb, mrb_value self)
 static mrb_value
 mrb_scinterm_noutrefresh(mrb_state *mrb, mrb_value self)
 {
-  Scintilla *sci = DATA_PTR(self);
+  Scintilla *sci = (Scintilla *)DATA_PTR(self);
 
   scintilla_noutrefresh(sci);
   return mrb_nil_value();
@@ -170,7 +170,7 @@ mrb_scinterm_noutrefresh(mrb_state *mrb, mrb_value self)
 static mrb_value
 mrb_scinterm_refresh(mrb_state *mrb, mrb_value self)
 {
-  Scintilla *sci = DATA_PTR(self);
+  Scintilla *sci = (Scintilla *)DATA_PTR(self);
 
   scintilla_refresh(sci);
   return mrb_nil_value();
@@ -180,7 +180,7 @@ mrb_scinterm_refresh(mrb_state *mrb, mrb_value self)
 static mrb_value
 mrb_scinterm_send_key(mrb_state *mrb, mrb_value self)
 {
-  Scintilla *sci = DATA_PTR(self);
+  Scintilla *sci = (Scintilla *)DATA_PTR(self);
   mrb_int key;
   mrb_bool shift, ctrl, alt;
 
@@ -192,7 +192,7 @@ mrb_scinterm_send_key(mrb_state *mrb, mrb_value self)
 static mrb_value
 mrb_scinterm_send_message(mrb_state *mrb, mrb_value self)
 {
-  Scintilla *sci = DATA_PTR(self);
+  Scintilla *sci = (Scintilla *)DATA_PTR(self);
   sptr_t ret;
   mrb_int i_message, argc;
   uptr_t w_param = 0;
@@ -261,7 +261,7 @@ mrb_scinterm_send_message(mrb_state *mrb, mrb_value self)
 static mrb_value
 mrb_scinterm_send_mouse(mrb_state *mrb, mrb_value self)
 {
-  Scintilla *sci = DATA_PTR(self);
+  Scintilla *sci = (Scintilla *)DATA_PTR(self);
   mrb_int event, button, y, x;
   mrb_float time;
   mrb_bool shift, ctrl, alt, ret;
@@ -276,13 +276,13 @@ mrb_scinterm_send_mouse(mrb_state *mrb, mrb_value self)
 static mrb_value
 mrb_scinterm_get_property(mrb_state *mrb, mrb_value self)
 {
-  Scintilla *sci = DATA_PTR(self);
+  Scintilla *sci = (Scintilla *)DATA_PTR(self);
   char *key = NULL, *value = NULL;
   mrb_int len;
 
   mrb_get_args(mrb, "z", &key);
   len = scintilla_send_message(sci, SCI_GETPROPERTY, (uptr_t)key, (sptr_t)NULL);
-  value = malloc(sizeof(char)*len);
+  value = (char *)malloc(sizeof(char)*len);
   len = scintilla_send_message(sci, SCI_GETPROPERTY, (uptr_t)key, (sptr_t)value);
   return mrb_str_new(mrb, value, len);
 }
@@ -290,7 +290,7 @@ mrb_scinterm_get_property(mrb_state *mrb, mrb_value self)
 static mrb_value
 mrb_scinterm_get_text(mrb_state *mrb, mrb_value self)
 {
-  Scintilla *sci = DATA_PTR(self);
+  Scintilla *sci = (Scintilla *)DATA_PTR(self);
   char *text = NULL;
   mrb_int nlen;
 
@@ -303,7 +303,7 @@ mrb_scinterm_get_text(mrb_state *mrb, mrb_value self)
 static mrb_value
 mrb_scinterm_get_line(mrb_state *mrb, mrb_value self)
 {
-  Scintilla *sci = DATA_PTR(self);
+  Scintilla *sci = (Scintilla *)DATA_PTR(self);
   char *text = NULL;
   mrb_int line, len;
 
@@ -317,7 +317,7 @@ mrb_scinterm_get_line(mrb_state *mrb, mrb_value self)
 static mrb_value
 mrb_scinterm_get_curline(mrb_state *mrb, mrb_value self)
 {
-  Scintilla *sci = DATA_PTR(self);
+  Scintilla *sci = (Scintilla *)DATA_PTR(self);
   char *text = NULL;
   mrb_int len, pos;
   mrb_value ret_a = mrb_ary_new(mrb);
@@ -333,7 +333,7 @@ mrb_scinterm_get_curline(mrb_state *mrb, mrb_value self)
 static mrb_value
 mrb_scinterm_set_lexer_language(mrb_state *mrb, mrb_value self)
 {
-  Scintilla *sci = DATA_PTR(self);
+  Scintilla *sci = (Scintilla *)DATA_PTR(self);
   char *lang = NULL;
   mrb_get_args(mrb, "z", &lang);
   scintilla_send_message(sci, SCI_SETLEXERLANGUAGE, 0, (sptr_t)lang);
@@ -343,7 +343,7 @@ mrb_scinterm_set_lexer_language(mrb_state *mrb, mrb_value self)
 static mrb_value
 mrb_scinterm_get_lexer_language(mrb_state *mrb, mrb_value self)
 {
-  Scintilla *sci = DATA_PTR(self);
+  Scintilla *sci = (Scintilla *)DATA_PTR(self);
   mrb_int len;
   char *text = NULL;
 
@@ -357,7 +357,7 @@ mrb_scinterm_get_lexer_language(mrb_state *mrb, mrb_value self)
 static mrb_value
 mrb_scinterm_resize_window(mrb_state *mrb, mrb_value self)
 {
-  Scintilla *sci = DATA_PTR(self);
+  Scintilla *sci = (Scintilla *)DATA_PTR(self);
   mrb_int lines, cols;
 
   mrb_get_args(mrb, "ii", &lines, &cols);
@@ -370,7 +370,7 @@ mrb_scinterm_resize_window(mrb_state *mrb, mrb_value self)
 static mrb_value
 mrb_scinterm_move_window(mrb_state *mrb, mrb_value self)
 {
-  Scintilla *sci = DATA_PTR(self);
+  Scintilla *sci = (Scintilla *)DATA_PTR(self);
   mrb_int x, y;
 
   mrb_get_args(mrb, "ii", &y, &x);
@@ -383,7 +383,7 @@ mrb_scinterm_move_window(mrb_state *mrb, mrb_value self)
 static mrb_value
 mrb_scinterm_setpos(mrb_state *mrb, mrb_value self)
 {
-  Scintilla *sci = DATA_PTR(self);
+  Scintilla *sci = (Scintilla *)DATA_PTR(self);
   mrb_int x, y;
 
   mrb_get_args(mrb, "ii", &y, &x);
@@ -396,9 +396,9 @@ mrb_scinterm_setpos(mrb_state *mrb, mrb_value self)
 static mrb_value
 mrb_scinterm_get_docpointer(mrb_state *mrb, mrb_value self)
 {
-  Scintilla *sci = DATA_PTR(self);
+  Scintilla *sci = (Scintilla *)DATA_PTR(self);
   sptr_t pdoc;
-  struct mrb_scintilla_doc_data *doc = mrb_malloc(mrb, sizeof(struct mrb_scintilla_doc_data));
+  struct mrb_scintilla_doc_data *doc = (struct mrb_scintilla_doc_data *)mrb_malloc(mrb, sizeof(struct mrb_scintilla_doc_data));
 
   pdoc = scintilla_send_message(sci, SCI_GETDOCPOINTER, 0, 0);
   doc->pdoc = pdoc;
@@ -408,7 +408,7 @@ mrb_scinterm_get_docpointer(mrb_state *mrb, mrb_value self)
 static mrb_value
 mrb_scinterm_set_docpointer(mrb_state *mrb, mrb_value self)
 {
-  Scintilla *sci = DATA_PTR(self);
+  Scintilla *sci = (Scintilla *)DATA_PTR(self);
   struct mrb_scintilla_doc_data *doc;
   mrb_value doc_obj;
 
@@ -416,7 +416,7 @@ mrb_scinterm_set_docpointer(mrb_state *mrb, mrb_value self)
   if (mrb_nil_p(doc_obj)) {
     scintilla_send_message(sci, SCI_SETDOCPOINTER, 0, (sptr_t)0);
   } else {
-    doc = DATA_PTR(doc_obj);
+    doc = (struct mrb_scintilla_doc_data *)DATA_PTR(doc_obj);
     scintilla_send_message(sci, SCI_SETDOCPOINTER, 0, doc->pdoc);
   }
   return mrb_nil_value();
@@ -425,9 +425,9 @@ mrb_scinterm_set_docpointer(mrb_state *mrb, mrb_value self)
 static mrb_value
 mrb_scinterm_create_document(mrb_state *mrb, mrb_value self)
 {
-  Scintilla *sci = DATA_PTR(self);
+  Scintilla *sci = (Scintilla *)DATA_PTR(self);
   sptr_t pdoc;
-  struct mrb_scintilla_doc_data *doc = mrb_malloc(mrb, sizeof(struct mrb_scintilla_doc_data));
+  struct mrb_scintilla_doc_data *doc = (struct mrb_scintilla_doc_data *)mrb_malloc(mrb, sizeof(struct mrb_scintilla_doc_data));
 
   pdoc = scintilla_send_message(sci, SCI_CREATEDOCUMENT, 0, 0);
   doc->pdoc = pdoc;
@@ -438,12 +438,12 @@ mrb_scinterm_create_document(mrb_state *mrb, mrb_value self)
 static mrb_value
 mrb_scinterm_add_refdocument(mrb_state *mrb, mrb_value self)
 {
-  Scintilla *sci = DATA_PTR(self);
+  Scintilla *sci = (Scintilla *)DATA_PTR(self);
   struct mrb_scintilla_doc_data *doc;
   mrb_value doc_obj;
 
   mrb_get_args(mrb, "o", &doc_obj);
-  doc = DATA_PTR(doc_obj);
+  doc = (struct mrb_scintilla_doc_data *)DATA_PTR(doc_obj);
   scintilla_send_message(sci, SCI_ADDREFDOCUMENT, 0, doc->pdoc);
   return mrb_nil_value();
 }
@@ -451,12 +451,12 @@ mrb_scinterm_add_refdocument(mrb_state *mrb, mrb_value self)
 static mrb_value
 mrb_scinterm_release_document(mrb_state *mrb, mrb_value self)
 {
-  Scintilla *sci = DATA_PTR(self);
+  Scintilla *sci = (Scintilla *)DATA_PTR(self);
   struct mrb_scintilla_doc_data *doc;
   mrb_value doc_obj;
 
   mrb_get_args(mrb, "o", &doc_obj);
-  doc = DATA_PTR(doc_obj);
+  doc = (struct mrb_scintilla_doc_data *)DATA_PTR(doc_obj);
   scintilla_send_message(sci, SCI_RELEASEDOCUMENT, 0, doc->pdoc);
   return mrb_nil_value();
 }
@@ -464,7 +464,7 @@ mrb_scinterm_release_document(mrb_state *mrb, mrb_value self)
 static mrb_value
 mrb_scinterm_autoc_get_current_text(mrb_state *mrb, mrb_value self)
 {
-  Scintilla *sci = DATA_PTR(self);
+  Scintilla *sci = (Scintilla *)DATA_PTR(self);
   char *text = NULL;
   mrb_int len;
 
@@ -480,7 +480,7 @@ mrb_scinterm_autoc_get_current_text(mrb_state *mrb, mrb_value self)
 static mrb_value
 mrb_scinterm_margin_get_text(mrb_state *mrb, mrb_value self)
 {
-  Scintilla *sci = DATA_PTR(self);
+  Scintilla *sci = (Scintilla *)DATA_PTR(self);
   char *text = NULL;
   mrb_int line, len;
 
