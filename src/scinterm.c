@@ -492,6 +492,35 @@ mrb_scinterm_margin_get_text(mrb_state *mrb, mrb_value self)
 }
 
 static mrb_value
+mrb_scinterm_get_textrange(mrb_state *mrb, mrb_value self)
+{
+  Scintilla *sci = (Scintilla *)DATA_PTR(self);
+
+  mrb_int cp_min, cp_max, len;
+  Sci_TextRange *tr = (Sci_TextRange *)mrb_malloc(mrb, sizeof(Sci_TextRange));
+
+  mrb_get_args(mrb, "ii", &cp_min, &cp_max);
+  tr->chrg.cpMin = cp_min;
+  tr->chrg.cpMax = cp_max;
+  tr->lpstrText = (char *)mrb_malloc(mrb, sizeof(char)*(cp_max-cp_min+2));
+
+  len = scintilla_send_message(sci, SCI_GETTEXTRANGE, 0, (sptr_t)tr);
+  return mrb_str_new_cstr(mrb, tr->lpstrText);
+}
+
+static mrb_value
+mrb_scinterm_get_wordchars(mrb_state *mrb, mrb_value self)
+{
+  Scintilla *sci = (Scintilla *)DATA_PTR(self);
+  char *text = NULL;
+  mrb_int len;
+  len = scintilla_send_message(sci, SCI_GETWORDCHARS, 0, (sptr_t)0) + 1;
+  text = (char *)mrb_malloc(mrb, sizeof(char)*len);
+  len = scintilla_send_message(sci, SCI_GETWORDCHARS, 0, (sptr_t)text);
+  return mrb_str_new_cstr(mrb, text);
+}
+
+static mrb_value
 mrb_scinterm_color_pair(mrb_state *mrb, mrb_value self)
 {
   mrb_int f, b;
@@ -550,8 +579,9 @@ mrb_mruby_scinterm_gem_init(mrb_state* mrb)
   mrb_define_method(mrb, sci, "sci_release_document", mrb_scinterm_release_document, MRB_ARGS_REQ(1));
   
   mrb_define_method(mrb, sci, "sci_autoc_get_current_text", mrb_scinterm_autoc_get_current_text, MRB_ARGS_NONE());
-
   mrb_define_method(mrb, sci, "sci_margin_get_text", mrb_scinterm_margin_get_text, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, sci, "sci_get_textrange", mrb_scinterm_get_textrange, MRB_ARGS_REQ(2));
+  mrb_define_method(mrb, sci, "sci_get_wordchars", mrb_scinterm_get_wordchars, MRB_ARGS_NONE());
 
   mrb_define_class_method(mrb, sci, "color_pair", mrb_scinterm_color_pair, MRB_ARGS_REQ(2));
   

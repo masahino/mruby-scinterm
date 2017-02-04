@@ -72,3 +72,10 @@ end
 assert('Platform') do
   assert_equal(:CURSES, Scintilla::PLATFORM)
 end
+
+assert('get_wordchars') do
+  Curses::initscr
+  sci = Scintilla::ScinTerm.new
+#  assert_equal("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
+#    sci.sci_get_wordchars)
+end
