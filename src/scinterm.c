@@ -497,7 +497,7 @@ mrb_scinterm_get_textrange(mrb_state *mrb, mrb_value self)
   Scintilla *sci = (Scintilla *)DATA_PTR(self);
 
   mrb_int cp_min, cp_max, len;
-  Sci_TextRange *tr = (Sci_TextRange *)mrb_malloc(mrb, sizeof(Sci_TextRange));
+  struct Sci_TextRange *tr = (struct Sci_TextRange *)mrb_malloc(mrb, sizeof(struct Sci_TextRange));
 
   mrb_get_args(mrb, "ii", &cp_min, &cp_max);
   tr->chrg.cpMin = cp_min;
