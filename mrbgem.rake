@@ -6,8 +6,8 @@ MRuby::Gem::Specification.new('mruby-scinterm') do |spec|
 
   def spec.download_scintilla
     require 'open-uri'
-    scintilla_ver='373'
-    scinterm_ver='1.8'
+    scintilla_ver='376'
+    scinterm_ver='1.9'
     scintilla_url = "http://www.scintilla.org/scintilla#{scintilla_ver}.tgz"
     scintilla_dir = "#{build_dir}/scintilla"
     scintilla_a = "#{scintilla_dir}/scintilla/bin/scintilla.a"
@@ -29,6 +29,7 @@ MRuby::Gem::Specification.new('mruby-scinterm') do |spec|
         end
       end
       sh %Q{(cd #{scintilla_dir}/scintilla && unzip -o #{filename scinterm_file})}
+      sh %Q{(cd #{scintilla_dir}/scintilla && patch -p0 < #{dir}/misc/scinterm_1.9.patch)}
       curses_flag = "-DNO_CXX11_REGEX"
       if build.kind_of?(MRuby::CrossBuild) && %w(x86_64-w64-mingw32 i686-w64-mingw32).include?(build.host_target)
         curses_flag += " -I/usr/#{build.host_target}/include/ncurses"
