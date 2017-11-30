@@ -30,6 +30,9 @@ MRuby::Gem::Specification.new('mruby-scinterm') do |spec|
       end
       sh %Q{(cd #{scintilla_dir}/scintilla && unzip -o #{filename scinterm_file})}
       curses_flag = "-DNO_CXX11_REGEX"
+      if RUBY_PLATFORM =~ /cygwin/
+        curses_flag += "-D_WIN32"
+      end
       if build.kind_of?(MRuby::CrossBuild) && %w(x86_64-w64-mingw32 i686-w64-mingw32).include?(build.host_target)
         curses_flag += " -I/usr/#{build.host_target}/include/ncurses"
       end
