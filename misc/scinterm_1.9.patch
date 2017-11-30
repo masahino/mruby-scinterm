@@ -1,0 +1,27 @@
+diff -ru scinterm_1.9-org/ScintillaTerm.cxx scinterm_1.9/ScintillaTerm.cxx
+--- scinterm_1.9-org/ScintillaTerm.cxx	2017-06-26 05:25:19.000000000 +0900
++++ scinterm_1.9/ScintillaTerm.cxx	2017-08-04 20:46:51.000000000 +0900
+@@ -15,10 +15,13 @@
+ #include <string>
+ #include <vector>
+ #include <map>
++#include <new>
+ #include <algorithm>
++#include <memory>
+ 
+ #include "Platform.h"
+ 
++#include "UniqueString.h"
+ #include "Scintilla.h"
+ #include "ILexer.h"
+ #include "Position.h"
+@@ -1284,7 +1287,7 @@
+           int offset = ry - ny - 1; // -1 ignores list box border
+           if (offset == 0 &&
+               time - autoCompleteLastClickTime < Platform::DoubleClickTime()) {
+-            ListBoxImpl* listbox = reinterpret_cast<ListBoxImpl *>(ac.lb);
++            ListBoxImpl* listbox = reinterpret_cast<ListBoxImpl *>(ac.lb.get());
+             if (listbox->doubleClickAction != NULL)
+               listbox->doubleClickAction(listbox->doubleClickActionData);
+           } else ac.lb->Select(n + offset);
+Only in scinterm_1.9/jinx: jinx.o
