@@ -30,7 +30,7 @@ MRuby::Gem::Specification.new('mruby-scinterm') do |spec|
       end
       sh %Q{(cd #{scintilla_dir}/scintilla && unzip -o #{filename scinterm_file})}
       sh %Q{(cd #{scintilla_dir}/scintilla && patch -p0 < #{dir}/misc/scinterm_1.9.patch)}
-      curses_flag = "-DNO_CXX11_REGEX"
+      curses_flag = "-DNO_CXX11_REGEX -D_XOPEN_SOURCE_EXTENDED"
       if build.kind_of?(MRuby::CrossBuild) && %w(x86_64-w64-mingw32 i686-w64-mingw32).include?(build.host_target)
         curses_flag += " -I/usr/#{build.host_target}/include/ncurses"
       end
